@@ -1,0 +1,18 @@
+{
+  "name": "refetch-interval",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@nestjs/common": "^8.4.4",
+    "@nestjs/core": "^8.4.4",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.5.5"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21"
+  }
+}
