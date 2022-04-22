@@ -13,8 +13,8 @@ let DatabaseModule = class DatabaseModule {
 };
 DatabaseModule = __decorate([
     (0, common_1.Module)({
-        providers: [...database_providers_1.databaseProvider],
-        exports: [...database_providers_1.databaseProvider],
+        providers: [...database_providers_1.databaseProviders],
+        exports: [...database_providers_1.databaseProviders],
     })
 ], DatabaseModule);
 exports.DatabaseModule = DatabaseModule;

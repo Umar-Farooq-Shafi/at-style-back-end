@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-export declare const databaseProvider: {
-    provider: string;
+export declare const databaseProviders: {
+    provide: string;
     useFactory: () => Promise<typeof mongoose>;
 }[];

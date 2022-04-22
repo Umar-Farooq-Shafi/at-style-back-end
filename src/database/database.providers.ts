@@ -1,6 +1,13 @@
 import * as mongoose from 'mongoose';
 
-const connection: string = process.env.MONGO_URI || '';
+import { ConfigService } from '@nestjs/config';
+
+const connection = new ConfigService().get<string>('MONGO_URI');
+console.log(connection);
+
+if (connection === undefined) {
+  throw new Error('MONGO_URI is not defined');
+}
 
 export const databaseProviders = [
   {

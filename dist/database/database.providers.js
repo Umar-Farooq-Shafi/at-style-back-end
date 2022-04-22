@@ -1,15 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.databaseProvider = void 0;
+exports.databaseProviders = void 0;
 const mongoose = require("mongoose");
-exports.databaseProvider = [
+const config_1 = require("@nestjs/config");
+const connection = new config_1.ConfigService().get('MONGO_URI');
+console.log(connection);
+if (connection === undefined) {
+    throw new Error('MONGO_URI is not defined');
+}
+exports.databaseProviders = [
     {
-        provider: 'DATABASE_CONNECTION',
-        useFactory: () => mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true,
-        }),
+        provide: 'DATABASE_CONNECTION',
+        useFactory: () => mongoose.connect(connection),
     },
 ];
 //# sourceMappingURL=database.providers.js.map
