@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 import { Observable } from 'rxjs';
 import { UserService } from './../user.service';
 import { User } from './../interface/user.interface';
@@ -9,7 +9,7 @@ export declare class UserController {
     constructor(userService: UserService);
     create(user: CreateUserDto): Promise<HttpStatus>;
     findAll(): Observable<Promise<User[]>>;
-    findOne(id: ObjectId): Promise<User>;
-    update(id: ObjectId, user: UpdateUserDto): Promise<User>;
-    delete(id: ObjectId): Promise<HttpStatus>;
+    findOne(id: Types.ObjectId): Promise<User>;
+    update(id: Types.ObjectId, user: UpdateUserDto): Promise<User>;
+    delete(id: Types.ObjectId): Promise<HttpStatus>;
 }

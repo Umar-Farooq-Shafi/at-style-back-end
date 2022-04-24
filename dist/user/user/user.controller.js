@@ -14,6 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
+const mongoose_1 = require("mongoose");
+const Joi = require("@hapi/joi");
 const rxjs_1 = require("rxjs");
 const user_service_1 = require("./../user.service");
 const user_dto_1 = require("./../dto/user.dto");
@@ -22,7 +24,25 @@ let UserController = class UserController {
         this.userService = userService;
     }
     async create(user) {
-        await this.userService.create(user);
+        const createUserSchema = Joi.object({
+            name: Joi.string().alphanum().min(3).max(30).required(),
+            gender: Joi.string().valid('male', 'female').required(),
+            email: Joi.string().email({
+                minDomainSegments: 2,
+                tlds: { allow: ['com', 'net'] },
+            }),
+            password: Joi.string()
+                .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+                .required(),
+            repeatPassword: Joi.ref('password'),
+            phone: Joi.number().required(),
+            referralCode: Joi.string(),
+        });
+        const { error, value: validatedUser } = createUserSchema.validate(user);
+        if (error) {
+            throw new common_1.BadRequestException(error.message);
+        }
+        await this.userService.create(validatedUser);
         return common_1.HttpStatus.CREATED;
     }
     findAll() {
@@ -32,6 +52,7 @@ let UserController = class UserController {
         return this.userService.findOne(id);
     }
     async update(id, user) {
+        user.updatedAt = new Date();
         return this.userService.update(id, user);
     }
     async delete(id) {
@@ -57,7 +78,7 @@ __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [mongoose_1.Types.ObjectId]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOne", null);
 __decorate([
@@ -65,14 +86,14 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, user_dto_1.UpdateUserDto]),
+    __metadata("design:paramtypes", [mongoose_1.Types.ObjectId, user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [mongoose_1.Types.ObjectId]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "delete", null);
 UserController = __decorate([

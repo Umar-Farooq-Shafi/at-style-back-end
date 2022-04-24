@@ -6,8 +6,8 @@ import { ConfigService } from '../config/config.service';
 export const databaseProviders: Provider[] = [
   {
     inject: [ConfigService],
-    provide: 'DATABASE_CONNECTION',
+    provide: 'DATABASE_CONNECTION', // connection string
     useFactory: (configService: ConfigService): Promise<typeof mongoose> =>
-      mongoose.connect(configService.get('MONGO_URI')),
+      mongoose.connect(configService.get('MONGO_URI')), // connect to mongo
   },
 ];

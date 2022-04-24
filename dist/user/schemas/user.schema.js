@@ -4,16 +4,24 @@ exports.UserSchema = void 0;
 const mongoose = require("mongoose");
 exports.UserSchema = new mongoose.Schema({
     name: String,
+    gender: String,
     email: {
         type: String,
         default: '',
     },
-    phone: {
-        type: Number,
-        default: 0,
-    },
+    phone: Number,
     password: String,
-    createdAt: Date,
-    updatedAt: Date,
+    referralCode: {
+        type: String,
+        default: '',
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 //# sourceMappingURL=user.schema.js.map

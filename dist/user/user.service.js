@@ -27,27 +27,42 @@ let UserService = class UserService {
         return this.userMode.find().exec();
     }
     async findOne(id) {
-        const user = await this.userMode.findById(id).exec();
-        if (user === null) {
-            throw new common_1.NotFoundException('User not found');
+        try {
+            const user = await this.userMode.findById(id).exec();
+            if (user === null) {
+                throw new common_1.NotFoundException('User not found');
+            }
+            return user;
         }
-        return user;
+        catch (e) {
+            throw new common_1.BadRequestException(e.message);
+        }
     }
     async update(id, user) {
-        const updatedUser = await this.userMode
-            .findByIdAndUpdate(id, user, { new: true })
-            .exec();
-        if (updatedUser === null) {
-            throw new common_1.NotFoundException('User not found');
+        try {
+            const updatedUser = await this.userMode
+                .findByIdAndUpdate(id, user, { new: true })
+                .exec();
+            if (updatedUser === null) {
+                throw new common_1.NotFoundException('User not found');
+            }
+            return updatedUser;
         }
-        return updatedUser;
+        catch (e) {
+            throw new common_1.BadRequestException(e.message);
+        }
     }
     async delete(id) {
-        const deletedUser = await this.userMode
-            .findByIdAndDelete(id, { new: true })
-            .exec();
-        if (deletedUser === null) {
-            throw new common_1.NotFoundException('User not found');
+        try {
+            const deletedUser = await this.userMode
+                .findByIdAndDelete(id, { new: true })
+                .exec();
+            if (deletedUser === null) {
+                throw new common_1.NotFoundException('User not found');
+            }
+        }
+        catch (e) {
+            throw new common_1.BadRequestException(e.message);
         }
     }
 };
