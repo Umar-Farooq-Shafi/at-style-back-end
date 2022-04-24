@@ -15,42 +15,69 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
+const user_service_1 = require("./../user.service");
+const user_dto_1 = require("./../dto/user.dto");
 let UserController = class UserController {
-    create() {
-        return 'This action adds a new user';
+    constructor(userService) {
+        this.userService = userService;
     }
-    findAll(request) {
-        console.log(request.headers);
-        return (0, rxjs_1.of)('This action returns all users');
+    async create(user) {
+        await this.userService.create(user);
+        return common_1.HttpStatus.CREATED;
     }
-    findOne(id) {
-        return `This action returns a #${id} user`;
+    findAll() {
+        return (0, rxjs_1.of)(this.userService.findAll());
+    }
+    async findOne(id) {
+        return this.userService.findOne(id);
+    }
+    async update(id, user) {
+        return this.userService.update(id, user);
+    }
+    async delete(id) {
+        await this.userService.delete(id);
+        return common_1.HttpStatus.NO_CONTENT;
     }
 };
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.HttpCode)(204),
     (0, common_1.Header)('Cache-Control', 'none'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
+    __metadata("design:paramtypes", [user_dto_1.CreateUserDto]),
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", rxjs_1.Observable)
 ], UserController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", String)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, user_dto_1.UpdateUserDto]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "delete", null);
 UserController = __decorate([
-    (0, common_1.Controller)('/api/user')
+    (0, common_1.Controller)('/api/user'),
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 exports.UserController = UserController;
 //# sourceMappingURL=user.controller.js.map

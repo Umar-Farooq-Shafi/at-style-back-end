@@ -2,16 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.databaseProviders = void 0;
 const mongoose = require("mongoose");
-const config_1 = require("@nestjs/config");
-const connection = new config_1.ConfigService().get('MONGO_URI');
-console.log(connection);
-if (connection === undefined) {
-    throw new Error('MONGO_URI is not defined');
-}
+const config_service_1 = require("../config/config.service");
 exports.databaseProviders = [
     {
+        inject: [config_service_1.ConfigService],
         provide: 'DATABASE_CONNECTION',
-        useFactory: () => mongoose.connect(connection),
+        useFactory: (configService) => mongoose.connect(configService.get('MONGO_URI')),
     },
 ];
 //# sourceMappingURL=database.providers.js.map

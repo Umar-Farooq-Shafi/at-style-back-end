@@ -26,6 +26,30 @@ let UserService = class UserService {
     async findAll() {
         return this.userMode.find().exec();
     }
+    async findOne(id) {
+        const user = await this.userMode.findById(id).exec();
+        if (user === null) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        return user;
+    }
+    async update(id, user) {
+        const updatedUser = await this.userMode
+            .findByIdAndUpdate(id, user, { new: true })
+            .exec();
+        if (updatedUser === null) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        return updatedUser;
+    }
+    async delete(id) {
+        const deletedUser = await this.userMode
+            .findByIdAndDelete(id, { new: true })
+            .exec();
+        if (deletedUser === null) {
+            throw new common_1.NotFoundException('User not found');
+        }
+    }
 };
 UserService = __decorate([
     (0, common_1.Injectable)(),

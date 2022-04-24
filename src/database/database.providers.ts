@@ -1,17 +1,13 @@
+import { Provider } from '@nestjs/common';
 import * as mongoose from 'mongoose';
 
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '../config/config.service';
 
-const connection = new ConfigService().get<string>('MONGO_URI');
-console.log(connection);
-
-if (connection === undefined) {
-  throw new Error('MONGO_URI is not defined');
-}
-
-export const databaseProviders = [
+export const databaseProviders: Provider[] = [
   {
+    inject: [ConfigService],
     provide: 'DATABASE_CONNECTION',
-    useFactory: (): Promise<typeof mongoose> => mongoose.connect(connection),
+    useFactory: (configService: ConfigService): Promise<typeof mongoose> =>
+      mongoose.connect(configService.get('MONGO_URI')),
   },
 ];
