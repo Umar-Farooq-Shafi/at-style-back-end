@@ -1,33 +1,59 @@
 import {
+  Body,
   Controller,
   Get,
   Header,
-  HttpCode,
+  HttpStatus,
   Param,
   Post,
-  Req,
+  Put,
+  Delete,
 } from '@nestjs/common';
+import { ObjectId } from 'mongoose';
 
-import { Request } from 'express';
 import { Observable, of } from 'rxjs';
+
+import { UserService } from './../user.service';
+import { User } from './../interface/user.interface';
+import { CreateUserDto, UpdateUserDto } from './../dto/user.dto';
 
 @Controller('/api/user')
 export class UserController {
+  constructor(private userService: UserService) {}
+
   @Post()
-  @HttpCode(204)
   @Header('Cache-Control', 'none')
-  create(): string {
-    return 'This action adds a new user';
+  async create(@Body() user: CreateUserDto): Promise<HttpStatus> {
+    await this.userService.create(user);
+    return HttpStatus.CREATED;
   }
 
   @Get()
-  findAll(@Req() request: Request): Observable<string> {
-    console.log(request.headers);
-    return of('This action returns all users');
+  findAll(): Observable<Promise<User[]>> {
+    return of(this.userService.findAll());
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): string {
-    return `This action returns a #${id} user`;
+  async findOne(@Param('id') id: ObjectId): Promise<User> {
+    return this.userService.findOne(id);
   }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: ObjectId,
+    @Body() user: UpdateUserDto,
+  ): Promise<User> {
+    return this.userService.update(id, user);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: ObjectId): Promise<HttpStatus> {
+    await this.userService.delete(id);
+    return HttpStatus.NO_CONTENT;
+  }
+
+  // @All()
+  // async notFound() {
+  //   throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+  // }
 }
