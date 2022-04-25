@@ -1,6 +1,8 @@
-import { AppService } from './app.service';
+import { User } from './user/interface/user.interface';
+import { AuthService } from './auth/auth.service';
 export declare class AppController {
-    private readonly appService;
-    constructor(appService: AppService);
-    getHello(): string;
+    private authService;
+    constructor(authService: AuthService);
+    login(req: any): Promise<User>;
+    getProfile(req: any): any;
 }

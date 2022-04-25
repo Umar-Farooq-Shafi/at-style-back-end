@@ -16,33 +16,38 @@ exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const Joi = require("@hapi/joi");
+const bcrypt = require("bcrypt");
 const rxjs_1 = require("rxjs");
 const user_service_1 = require("./../user.service");
 const user_dto_1 = require("./../dto/user.dto");
+const validation_pipe_1 = require("../../pipes/validation.pipe");
+const objectid_pipe_1 = require("../../pipes/objectid.pipe");
+const public_decorator_1 = require("../../decorators/public.decorator");
+const createUserSchema = Joi.object({
+    name: Joi.string().alphanum().min(3).max(30).required(),
+    gender: Joi.string().valid('male', 'female').required(),
+    email: Joi.string().email({
+        minDomainSegments: 2,
+        tlds: { allow: ['com', 'net'] },
+    }),
+    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    repeatPassword: Joi.ref('password'),
+    phone: Joi.number().required(),
+    referralCode: Joi.string(),
+});
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
     }
     async create(user) {
-        const createUserSchema = Joi.object({
-            name: Joi.string().alphanum().min(3).max(30).required(),
-            gender: Joi.string().valid('male', 'female').required(),
-            email: Joi.string().email({
-                minDomainSegments: 2,
-                tlds: { allow: ['com', 'net'] },
-            }),
-            password: Joi.string()
-                .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
-                .required(),
-            repeatPassword: Joi.ref('password'),
-            phone: Joi.number().required(),
-            referralCode: Joi.string(),
-        });
-        const { error, value: validatedUser } = createUserSchema.validate(user);
-        if (error) {
-            throw new common_1.BadRequestException(error.message);
+        const userExists = await this.userService.checkUserExists(user.name);
+        if (userExists) {
+            return common_1.HttpStatus.CONFLICT;
         }
-        await this.userService.create(validatedUser);
+        const salt = await bcrypt.genSalt();
+        const hash = await bcrypt.hash(user.password, salt);
+        user.password = hash;
+        await this.userService.create(user);
         return common_1.HttpStatus.CREATED;
     }
     findAll() {
@@ -63,6 +68,8 @@ let UserController = class UserController {
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.Header)('Cache-Control', 'none'),
+    (0, common_1.UsePipes)(new validation_pipe_1.JoiValidationPipe(createUserSchema)),
+    (0, public_decorator_1.Public)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_dto_1.CreateUserDto]),
@@ -76,14 +83,14 @@ __decorate([
 ], UserController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', new objectid_pipe_1.ParseObjectPipe())),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [mongoose_1.Types.ObjectId]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Put)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', new objectid_pipe_1.ParseObjectPipe())),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [mongoose_1.Types.ObjectId, user_dto_1.UpdateUserDto]),
@@ -91,7 +98,7 @@ __decorate([
 ], UserController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Param)('id', new objectid_pipe_1.ParseObjectPipe())),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [mongoose_1.Types.ObjectId]),
     __metadata("design:returntype", Promise)

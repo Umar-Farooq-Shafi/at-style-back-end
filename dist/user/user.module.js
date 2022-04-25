@@ -19,6 +19,7 @@ UserModule = __decorate([
         imports: [database_module_1.DatabaseModule],
         controllers: [user_controller_1.UserController],
         providers: [user_service_1.UserService, ...user_providers_1.userProviders],
+        exports: [user_service_1.UserService],
     })
 ], UserModule);
 exports.UserModule = UserModule;

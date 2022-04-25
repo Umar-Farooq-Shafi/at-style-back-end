@@ -23,3 +23,15 @@ export const UserSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+UserSchema.pre('aggregate', function () {
+  this.model.aggregate([
+    {
+      $project: {
+        _id: {
+          $toString: '$_id',
+        },
+      },
+    },
+  ]);
+});

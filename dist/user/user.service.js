@@ -27,42 +27,43 @@ let UserService = class UserService {
         return this.userMode.find().exec();
     }
     async findOne(id) {
-        try {
-            const user = await this.userMode.findById(id).exec();
-            if (user === null) {
-                throw new common_1.NotFoundException('User not found');
-            }
-            return user;
+        const user = await this.userMode.findById(id).exec();
+        if (user === null) {
+            throw new common_1.NotFoundException('User not found');
         }
-        catch (e) {
-            throw new common_1.BadRequestException(e.message);
+        return user;
+    }
+    async findOneByUsername(username) {
+        const user = await this.userMode
+            .findOne({ name: username })
+            .exec();
+        if (user === null) {
+            throw new common_1.UnauthorizedException('User not found');
         }
+        return user;
+    }
+    async checkUserExists(name) {
+        const user = await this.userMode.findOne({ name }).exec();
+        if (user === null) {
+            return false;
+        }
+        return true;
     }
     async update(id, user) {
-        try {
-            const updatedUser = await this.userMode
-                .findByIdAndUpdate(id, user, { new: true })
-                .exec();
-            if (updatedUser === null) {
-                throw new common_1.NotFoundException('User not found');
-            }
-            return updatedUser;
+        const updatedUser = await this.userMode
+            .findByIdAndUpdate(id, user, { new: true })
+            .exec();
+        if (updatedUser === null) {
+            throw new common_1.NotFoundException('User not found');
         }
-        catch (e) {
-            throw new common_1.BadRequestException(e.message);
-        }
+        return updatedUser;
     }
     async delete(id) {
-        try {
-            const deletedUser = await this.userMode
-                .findByIdAndDelete(id, { new: true })
-                .exec();
-            if (deletedUser === null) {
-                throw new common_1.NotFoundException('User not found');
-            }
-        }
-        catch (e) {
-            throw new common_1.BadRequestException(e.message);
+        const deletedUser = await this.userMode
+            .findByIdAndDelete(id, { new: true })
+            .exec();
+        if (deletedUser === null) {
+            throw new common_1.NotFoundException('User not found');
         }
     }
 };

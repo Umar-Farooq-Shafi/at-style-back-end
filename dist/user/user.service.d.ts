@@ -7,6 +7,8 @@ export declare class UserService {
     create(createUserDto: CreateUserDto): Promise<User>;
     findAll(): Promise<User[]>;
     findOne(id: Types.ObjectId): Promise<User>;
+    findOneByUsername(username: string): Promise<User>;
+    checkUserExists(name: string): Promise<boolean>;
     update(id: Types.ObjectId, user: UpdateUserDto): Promise<User>;
     delete(id: Types.ObjectId): Promise<void>;
 }

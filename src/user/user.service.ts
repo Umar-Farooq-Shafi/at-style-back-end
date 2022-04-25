@@ -1,9 +1,9 @@
 import { Model, Types } from 'mongoose';
 import {
-  BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { User } from './interface/user.interface';
@@ -29,44 +29,53 @@ export class UserService {
 
   // find user by id
   async findOne(id: Types.ObjectId): Promise<User> {
-    // handling the given id is not a valid ObjectId
-    try {
-      const user: User | null = await this.userMode.findById(id).exec();
+    const user: User | null = await this.userMode.findById(id).exec();
 
-      // if user is not found
-      if (user === null) {
-        throw new NotFoundException('User not found');
-      }
-      return user;
-    } catch (e: any) {
-      throw new BadRequestException(e.message); // throw bad request exception
+    // if user is not found
+    if (user === null) {
+      throw new NotFoundException('User not found');
     }
+    return user;
+  }
+
+  // find user by name
+  async findOneByUsername(username: string): Promise<User> {
+    const user: User | null = await this.userMode
+      .findOne({ name: username })
+      .exec();
+
+    if (user === null) {
+      throw new UnauthorizedException('User not found');
+    }
+    return user;
+  }
+
+  async checkUserExists(name: string): Promise<boolean> {
+    const user: User | null = await this.userMode.findOne({ name }).exec();
+
+    if (user === null) {
+      return false;
+    }
+    return true;
   }
 
   async update(id: Types.ObjectId, user: UpdateUserDto): Promise<User> {
-    try {
-      const updatedUser: User | null = await this.userMode
-        .findByIdAndUpdate(id, user, { new: true })
-        .exec();
-      if (updatedUser === null) {
-        throw new NotFoundException('User not found');
-      }
-      return updatedUser;
-    } catch (e: any) {
-      throw new BadRequestException(e.message);
+    const updatedUser: User | null = await this.userMode
+      .findByIdAndUpdate(id, user, { new: true })
+      .exec();
+    if (updatedUser === null) {
+      throw new NotFoundException('User not found');
     }
+    return updatedUser;
   }
 
   async delete(id: Types.ObjectId): Promise<void> {
-    try {
-      const deletedUser: User | null = await this.userMode
-        .findByIdAndDelete(id, { new: true })
-        .exec();
-      if (deletedUser === null) {
-        throw new NotFoundException('User not found');
-      }
-    } catch (e: any) {
-      throw new BadRequestException(e.message);
+    const deletedUser: User | null = await this.userMode
+      .findByIdAndDelete(id, { new: true })
+      .exec();
+
+    if (deletedUser === null) {
+      throw new NotFoundException('User not found');
     }
   }
 }

@@ -24,4 +24,15 @@ exports.UserSchema = new mongoose.Schema({
         default: Date.now,
     },
 });
+exports.UserSchema.pre('aggregate', function () {
+    this.model.aggregate([
+        {
+            $project: {
+                _id: {
+                    $toString: '$_id',
+                },
+            },
+        },
+    ]);
+});
 //# sourceMappingURL=user.schema.js.map
